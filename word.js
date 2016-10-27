@@ -1,50 +1,62 @@
 // Should contain all of the methods which will check the letters guessed versus the random word selected.
 
-
 var Letter = require('./letter.js');
 
-//Constructor for word
-var Word = function(wrd) {
-	this.word = wrd;
-	this.letrs = [];
-	this.found = false;
-	this.getLetrs = function() {
-		for(var i=0; i<this.word.length; i++) {
-			this.letrs.push(new letter.Letter(this.word[i]));
-		}
-	};
-	// Finds the word
-	this.findWord = function() {
-		var counter = 0;
-		for(var i=0; i<this.letrs.length; i++) {
-			if(this.letrs[i].appear) {
-				counter++;
-			}
-		}
-		if(counter == this.letrs.length) {
-			this.found = true;
-		}
-		return this.found;
-	};
-	// Checks if correct letter is found
-	this.ifFound = function(guessLetter) {
-		var returnChar = 0;
-		for (var i=0; i<this.letrs.length; i++) {
-			if(this.letrs[i].character == guessLetter) {
-				this.letrs[i].appear = true;
-				returnChar++;
-			}
-		}
-		return returnChar;
-	};
-	// Renders the word
-	this.wordRender = function() {
-		var strng = "";
-		for(var i=0; i<this.letrs.length; i++) {
-			strng += this.letrs[i].getCharacter();
-		}
-		return strng;
-	}
+var regEx = /[a-z]|/i;
+
+function Word(target) {
+    this.target = target;
+    this.targetWord = target.toUpperCase().split('');
+
+    this.generateDisplayWord = function () {
+
+        var wordArray = [];
+
+        for (var i = 0; i < this.target.length; i++) {
+
+            if (regEx.test(this.target[i])) {
+                wordArray.push(new Letter(this.target[i].toUpperCase()));
+            } else {
+                wordArray.push(this.target[i])
+            }
+
+        }
+
+        return wordArray;
+    };
+    this.displayWord = this.generateDisplayWord();
+
+    this.checkLetterInput = function (letter) {
+
+        var isCorrect = false;
+
+        for (var index in this.targetWord) {
+            if (letter.toUpperCase() === this.targetWord[index]) {
+                this.displayWord[index].guessed = true;
+                isCorrect = true;
+            }
+        }
+
+        return isCorrect;
+    };
+
+    this.getTargetWord = function () {
+        return this.targetWord.join('');
+    };
+
+    this.getDisplayWord = function () {
+        var display = '';
+
+        for (var index in this.displayWord) {
+            if (regEx.test(this.displayWord[index])) {
+                display += this.displayWord[index].getCharacter();
+            } else {
+                display += this.displayWord[index];
+            }
+        }
+        return display;
+    }
+
 }
 
 module.exports = Word;
